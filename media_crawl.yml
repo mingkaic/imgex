@@ -1,8 +1,6 @@
 # purpose: search for audio and visual assets on reddit
 depth: 12 # tweak this
 same_host: true
-contains_tags:
-  - img
 # first value = minimum image width,
 # second value = minimum image height,
 # ignores additional values

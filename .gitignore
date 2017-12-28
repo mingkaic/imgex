@@ -26,3 +26,6 @@ _testmain.go
 .idea
 .DS_Store
 download/**
+*.db
+bin/**
+phantomjs
