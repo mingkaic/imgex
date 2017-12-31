@@ -1,8 +1,0 @@
-# purpose: search for audio and visual assets on reddit
-depth: 12 # tweak this
-same_host: true
-# first value = minimum image width,
-# second value = minimum image height,
-# ignores additional values
-image_limit:
-  - 500

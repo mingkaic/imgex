@@ -1,0 +1,3 @@
+# purpose: search for audio and visual assets on reddit
+depth: 12 # tweak this
+same_host: true

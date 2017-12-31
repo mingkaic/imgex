@@ -6,3 +6,9 @@ within a certain link distance (depth) from the input link.
 All visited pages must also share the same hostname as the input link.
 
 This program uses the [xcrawl module](https://github.com/mingkaic/xcrawl), an extensible web crawler.
+
+### docker
+
+use image mkaichen/imgex:latest, run
+
+    docker run -d mkaichen/imgex:latest

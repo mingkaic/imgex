@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package crawl;
+
+service Crawler {
+    rpc Crawl (CrawlOpt) returns (stream ImgInfo);
+}
+
+message CrawlOpt {
+    string link = 1;
+    uint32 maxDepth = 2;
+    bool sameHost = 3;
+    repeated string containsTags = 4;
+}
+
+message ImgInfo {
+    string imgName = 1;
+}
