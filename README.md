@@ -9,6 +9,4 @@ This program uses the [xcrawl module](https://github.com/mingkaic/xcrawl), an ex
 
 ### docker
 
-use image mkaichen/imgex:latest, run
-
-    docker run -d mkaichen/imgex:latest
+use image mkaichen/imgex:latest

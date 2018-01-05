@@ -13,4 +13,4 @@ COPY . $APP_DIR
 RUN go get ./...
 RUN make
 
-CMD [ "go", "run", "server/main.go" ]
+CMD [ "bash", "docker_startup.sh" ]

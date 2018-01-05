@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -26,10 +27,14 @@ var db *imgcrawl.CrawlDB
 var filenameGroup = regexp.MustCompile(`.+\/(.*)\.+`)
 
 func main() {
-	host := os.Getenv("POSTGRES_HOST")
-	usr := os.Getenv("POSTGRES_USR")
-	pwd := os.Getenv("POSTGRES_PWD")
-	psqlInfo := fmt.Sprintf("host=%s port=5432 user=%s password=%s dbname=imgex sslmode=disable", host, usr, pwd)
+	db_host := getEnvOrFlag("POSTGRES_HOST", "host", "127.0.0.1")
+	db_port := getEnvOrFlag("POSTGRES_PORT", "port", "5432")
+	db_user := getEnvOrFlag("POSTGRES_USR", "usr", "postgres")
+	db_password := getEnvOrFlag("POSTGRES_PWD", "pwd", "postgres")
+	db_database := getEnvOrFlag("POSTGRES_DB", "db", "postgres")
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		db_host, db_port, db_user, db_password, db_database)
+
 	// db setup
 	db = imgcrawl.New("postgres", psqlInfo, downloadDir)
 	defer db.Close()
@@ -40,6 +45,7 @@ func main() {
 	}
 	s := grpc.NewServer()
 	pb.RegisterCrawlerServer(s, &server{})
+	fmt.Printf("server listening on %s\n", port)
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
 	if err := s.Serve(lis); err != nil {
@@ -62,4 +68,12 @@ func (s *server) Crawl(in *pb.CrawlOpt, stream pb.Crawler_CrawlServer) error {
 	})
 
 	return nil
+}
+
+func getEnvOrFlag(key, flagstr, fallback string) string {
+	value := os.Getenv(key)
+	if len(value) == 0 {
+		return *flag.String(flagstr, fallback, flagstr)
+	}
+	return value
 }

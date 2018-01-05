@@ -1,0 +1,35 @@
+version: '2'
+
+volumes:
+  assets:
+    external: false
+  configs:
+    external: false
+  db-data:
+    external: false
+
+services:
+  imgex:
+    image: 'mkaichen/imgex:latest'
+    build: .
+    ports:
+      - '50051:50051'
+    environment:
+      - POSTGRES_HOST=database
+      - POSTGRES_USR=imgex
+      - POSTGRES_PWD=imgex
+      - POSTGRES_DB=imgex
+    depends_on:
+      - database
+
+  database:
+    image: postgres:latest
+    volumes: 
+      - /data/database
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=imgex
+      - POSTGRES_PASSWORD=imgex
+      - POSTGRES_DB=imgex
+    restart: always
