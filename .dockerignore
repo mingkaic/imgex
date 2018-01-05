@@ -29,5 +29,6 @@ download/**
 *.db
 bin/**
 phantomjs
+*.pb.go
 Dockerfile
 console

@@ -87,6 +87,10 @@ func (this CrawlDB) Crawl(link string, crawler *xcrawl.Crawler, cb CrawlCB) {
 
 func (this CrawlDB) downloadLink(wg *sync.WaitGroup, link string, cb CrawlCB) {
 	defer wg.Done()
+	if this.SourceExists(link) {
+		return
+	}
+
 	resp, err := http.Get(link)
 	if err != nil {
 		log.Println(err)
@@ -107,5 +111,13 @@ func (this CrawlDB) downloadLink(wg *sync.WaitGroup, link string, cb CrawlCB) {
 		return
 	}
 	imgModel, err := this.AddImg(name, data)
+	if err != nil {
+		switch err.(type) {
+		case *imgdb.DupFileError:
+			this.AddSource(imgModel, link)
+		}
+	} else {
+		this.AddSource(imgModel, link)
+	}
 	cb(link, imgModel, err)
 }

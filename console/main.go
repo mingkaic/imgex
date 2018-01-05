@@ -40,7 +40,7 @@ func main() {
 	crawler := xcrawl.NewYaml(options)
 	db.Crawl(args[0], crawler, func(link string, _ *imgdb.ImageFile, err error) {
 		if err != nil {
-			fmt.Println(link, err)
+			//fmt.Println(link, err)
 		} else {
 			fmt.Println("successfully downloaded", link)
 		}

@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
+	"os"
 	"regexp"
 
 	"github.com/mingkaic/imgdb"
@@ -24,8 +26,12 @@ var db *imgcrawl.CrawlDB
 var filenameGroup = regexp.MustCompile(`.+\/(.*)\.+`)
 
 func main() {
+	host := os.Getenv("POSTGRES_HOST")
+	usr := os.Getenv("POSTGRES_USR")
+	pwd := os.Getenv("POSTGRES_PWD")
+	psqlInfo := fmt.Sprintf("host=%s port=5432 user=%s password=%s dbname=imgex sslmode=disable", host, usr, pwd)
 	// db setup
-	db = imgcrawl.New("sqlite3", "test.db", downloadDir)
+	db = imgcrawl.New("postgres", psqlInfo, downloadDir)
 	defer db.Close()
 
 	lis, err := net.Listen("tcp", port)
