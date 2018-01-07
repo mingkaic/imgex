@@ -43,8 +43,13 @@ var phantomPath = filepath.Join(phantomgo.GOPATH, "/src/github.com/mingkaic/imge
 
 // New ...
 // Instantiates imgdb.ImgDB in CrawlDB
-func New(dialect, source, filedir string) *CrawlDB {
-	return &CrawlDB{imgdb.New(dialect, source, filedir)}
+func New(dialect, source, filedir string) (out *CrawlDB, err error) {
+	db, err := imgdb.New(dialect, source, filedir)
+	if err != nil {
+		return
+	}
+	out = &CrawlDB{db}
+	return
 }
 
 // Crawl ...

@@ -34,7 +34,10 @@ func main() {
 	}
 
 	// db setup
-	db := imgcrawl.New("sqlite3", "imgex.db", downloadDir)
+	db, err := imgcrawl.New("sqlite3", "imgex.db", downloadDir)
+	if err != nil {
+		panic(err)
+	}
 	defer db.Close()
 
 	crawler := xcrawl.NewYaml(options)
