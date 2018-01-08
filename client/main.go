@@ -26,6 +26,7 @@ func main() {
 		log.Fatal(err)
 	}
 	if status.ServiceUp {
+		fmt.Println("service is up, start crawling")
 		stream, err := c.Crawl(context.Background(), &pb.CrawlOpt{
 			Link:     "http://www.reddit.com",
 			MaxDepth: 12,

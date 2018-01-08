@@ -4,7 +4,6 @@
 package imgcrawl
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -64,7 +63,7 @@ func (this CrawlDB) Crawl(link string, crawler *xcrawl.Crawler, cb CrawlCB) {
 			log.Println(err)
 			return
 		}
-		fmt.Println("processing", info.Link)
+		log.Println("processing", info.Link)
 		imgStews := info.DOM.FindAll("img")
 		for _, img := range imgStews {
 			if links, ok := img.Attrs["src"]; ok && len(links) > 0 {

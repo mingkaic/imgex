@@ -68,13 +68,13 @@ func main() {
 	health.RegisterPeriodicFunc("database_failure_check", time.Minute*3, func() error {
 		err := dbPing()
 		if err != nil {
-			fmt.Println("database disconnected...")
+			log.Println("database disconnected...")
 			dbInfo.status = DB_ERR
 		} else if dbInfo.status == DB_ERR {
 			// there is no problem connecting with db,
 			// but have internal error status
 			// attempt to reconnect
-			fmt.Println("database reconnecting...")
+			log.Println("database reconnecting...")
 			connDB()
 		}
 		return err
@@ -121,10 +121,10 @@ func connDB() {
 		log.Println(err)
 		errorUpdater.Update(err)
 		dbInfo.status = DB_ERR
-		fmt.Println("database connection failed, retry later...")
+		log.Println("database connection failed, retry later...")
 	} else {
 		dbInfo.status = DB_UP
-		fmt.Println("database connection successful")
+		log.Println("database connection successful")
 	}
 }
 
