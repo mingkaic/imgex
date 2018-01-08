@@ -4,6 +4,7 @@ package crawl;
 
 service Crawler {
     rpc Crawl (CrawlOpt) returns (stream ImgInfo);
+    rpc Health (Empty) returns (ServiceStatus);
 }
 
 message CrawlOpt {
@@ -15,4 +16,11 @@ message CrawlOpt {
 
 message ImgInfo {
     string imgName = 1;
+}
+
+message Empty {}
+
+message ServiceStatus {
+    bool serviceUp = 1;
+    string message = 2;
 }

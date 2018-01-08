@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -15,6 +16,7 @@ import (
 	"github.com/mingkaic/imgex/imgcrawl"
 	pb "github.com/mingkaic/imgex/proto"
 	"github.com/mingkaic/xcrawl"
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -35,14 +37,11 @@ const (
 //                    Globals
 // =============================================
 
-const (
-	downloadDir = "download"
-	port        = ":50051"
-)
+const port = ":50051"
 
+var downloadDir string
 var filenameGroup = regexp.MustCompile(`.+\/(.*)\.+`)
 var errorUpdater = health.NewStatusUpdater()
-
 var dbInfo = struct {
 	db             *imgcrawl.CrawlDB
 	host, port     string
@@ -55,15 +54,18 @@ var dbInfo = struct {
 // =============================================
 
 func main() {
-	dbInfo.host = getEnvOrFlag("POSTGRES_HOST", "host", "127.0.0.1")
-	dbInfo.port = getEnvOrFlag("POSTGRES_PORT", "port", "5432")
-	dbInfo.usr = getEnvOrFlag("POSTGRES_USR", "usr", "postgres")
-	dbInfo.pwd = getEnvOrFlag("POSTGRES_PWD", "pwd", "postgres")
-	dbInfo.name = getEnvOrFlag("POSTGRES_DB", "db", "postgres")
+	flag.StringVar(&downloadDir, "download", "./download",
+		"directory path to copy download images")
+	getEnvOrFlag(&dbInfo.host, "POSTGRES_HOST", "host", "127.0.0.1")
+	getEnvOrFlag(&dbInfo.port, "POSTGRES_PORT", "port", "5432")
+	getEnvOrFlag(&dbInfo.usr, "POSTGRES_USR", "usr", "postgres")
+	getEnvOrFlag(&dbInfo.pwd, "POSTGRES_PWD", "pwd", "postgres")
+	getEnvOrFlag(&dbInfo.name, "POSTGRES_DB", "db", "postgres")
+	flag.Parse()
 
 	// health setup
 	health.Register("internal errors", errorUpdater)
-	health.RegisterPeriodicFunc("database_failure_check", time.Minute*2.5, func() error {
+	health.RegisterPeriodicFunc("database_failure_check", time.Minute*3, func() error {
 		err := dbPing()
 		if err != nil {
 			fmt.Println("database disconnected...")
@@ -99,12 +101,13 @@ func main() {
 
 // Argument Utility
 
-func getEnvOrFlag(key, flagstr, fallback string) string {
+func getEnvOrFlag(out *string, key, flagStr, fallback string) {
 	value := os.Getenv(key)
 	if len(value) == 0 {
-		return *flag.String(flagstr, fallback, flagstr)
+		flag.StringVar(out, flagStr, fallback, flagStr)
+	} else {
+		*out = value
 	}
-	return value
 }
 
 // Database utility
@@ -162,4 +165,10 @@ func (s *server) Crawl(in *pb.CrawlOpt, stream pb.Crawler_CrawlServer) error {
 	})
 
 	return nil
+}
+
+func (s *server) Health(ctx context.Context, _ *pb.Empty) (*pb.ServiceStatus, error) {
+	stats := health.CheckStatus()
+	jstr, err := json.Marshal(stats)
+	return &pb.ServiceStatus{ServiceUp: len(stats) == 0, Message: string(jstr)}, err
 }

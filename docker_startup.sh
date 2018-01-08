@@ -9,4 +9,4 @@ fi
 if [ -z "$POSTGRES_PORT" ]; then
     export POSTGRES_PORT="5432";
 fi
-./wait-for-it.sh $POSTGRES_HOST:$POSTGRES_PORT -- go run server/main.go
+./wait-for-it.sh $POSTGRES_HOST:$POSTGRES_PORT -- go run server/main.go -download=/data/imgexdb

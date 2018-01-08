@@ -21,22 +21,30 @@ func main() {
 	defer conn.Close()
 	c := pb.NewCrawlerClient(conn)
 
-	stream, err := c.Crawl(context.Background(), &pb.CrawlOpt{
-		Link:     "http://www.reddit.com",
-		MaxDepth: 12,
-		SameHost: true,
-	})
+	status, err := c.Health(context.Background(), &pb.Empty{})
 	if err != nil {
 		log.Fatal(err)
 	}
-	for {
-		imgInfo, err := stream.Recv()
-		if err == io.EOF {
-			break
-		}
+	if status.ServiceUp {
+		stream, err := c.Crawl(context.Background(), &pb.CrawlOpt{
+			Link:     "http://www.reddit.com",
+			MaxDepth: 12,
+			SameHost: true,
+		})
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(imgInfo.ImgName)
+		for {
+			imgInfo, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println(imgInfo.ImgName)
+		}
+	} else {
+		fmt.Println(status.Message)
 	}
 }

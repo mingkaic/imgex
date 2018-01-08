@@ -1,16 +1,9 @@
 version: '2'
-
-volumes:
-  assets:
-    external: false
-  configs:
-    external: false
-  db-data:
-    external: false
-
 services:
   imgex:
     image: 'mkaichen/imgex:latest'
+    volumes:
+      - /data/database
     build: .
     ports:
       - '50051:50051'

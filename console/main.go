@@ -18,11 +18,11 @@ const downloadDir = "download"
 var GOPATH = os.Getenv("GOPATH")
 
 func main() {
-	flag.Parse()
-	args := flag.Args()
 	cyml := flag.String("cyml",
 		filepath.Join(GOPATH, "src/github.com/mingkaic/imgex/console/media_crawl.yml"),
 		"yml file outlining search constraint")
+	flag.Parse()
+	args := flag.Args()
 	if len(args) < 1 {
 		log.Fatalf("Specify starting location")
 	}
